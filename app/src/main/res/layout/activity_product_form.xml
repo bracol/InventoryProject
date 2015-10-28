@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/appbar"
+        layout="@layout/app_bar" />
+
+    <ImageView
+        android:id="@+id/imageViewProductInsert"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_below="@+id/appbar"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/ic_image_photo" />
+
+    <Button
+        android:layout_marginTop="12dp"
+        android:id="@+id/buttonProductFormImageInsert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/imageViewProductInsert"
+        android:layout_toRightOf="@+id/imageViewProductInsert"
+        android:text="Alterar" />
+
+    <EditText
+        android:id="@+id/editTextProductName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageViewProductInsert"
+        android:layout_marginTop="8dp"
+        android:hint="Name" />
+
+    <EditText
+        android:id="@+id/editTextProductValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editTextProductName"
+        android:layout_marginTop="8dp"
+        android:hint="Value" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_below="@+id/editTextProductValue"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content">
+
+        <Spinner
+            android:id="@+id/spinnerListProdutFormGeneric"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.AppCompat.Spinner.Underlined"
+            >
+        </Spinner>
+
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>
