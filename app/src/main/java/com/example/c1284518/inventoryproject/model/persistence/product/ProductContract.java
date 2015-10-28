@@ -27,10 +27,10 @@ public class ProductContract {
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE " + TABLE_NAME);
         sb.append("(");
-        sb.append(ID + " INTEGER PRIMARY KEY");
+        sb.append(ID + " INTEGER PRIMARY KEY, ");
         sb.append(NAME + " TEXT, ");
         sb.append(VALUE + " REAL, ");
-        sb.append(IMAGE + " TEXT, ");
+        sb.append(IMAGE + " TEXT ");
         sb.append(" ); ");
 
         return sb.toString();

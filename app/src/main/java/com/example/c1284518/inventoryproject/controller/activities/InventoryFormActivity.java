@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -18,8 +19,11 @@ import android.widget.TextView;
 
 import com.example.c1284518.inventoryproject.R;
 import com.example.c1284518.inventoryproject.model.entities.Product;
+import com.example.c1284518.inventoryproject.model.persistence.product.ProductRepository;
+import com.example.c1284518.inventoryproject.model.service.ProductService;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Created by c1284518 on 28/10/2015.
@@ -95,6 +99,7 @@ public class InventoryFormActivity extends AppCompatActivity {
     public void bindProduct(){
         product.setName(editTextName.getText().toString());
         product.setValue(Double.parseDouble(editTextValue.getText().toString()));
+        product.setImage(caminhoArquivo);
 
     }
 
@@ -132,6 +137,21 @@ public class InventoryFormActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_product_form, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_productForm_salvar:
+                onMenuSave();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void onMenuSave() {
+        bindProduct();
+        ProductService.save(product);
+        List<Product> list = ProductService.findAll();
     }
 
     //FIM MANIPULACAO DE MENUS
