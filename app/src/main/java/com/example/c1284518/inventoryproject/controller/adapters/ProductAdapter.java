@@ -16,6 +16,7 @@ import com.example.c1284518.inventoryproject.R;
 import com.example.c1284518.inventoryproject.model.entities.Product;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -45,12 +46,21 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
         Product current = listProduct.get(position);
         holder.textViewName.setText(current.getName());
         holder.textViewValue.setText(current.getValue().toString());
-        holder.imageViewProductListImage.setImageURI(Uri.parse(current.getImage()));
-//        Uri selectedImage = Uri.parse(current.getImage());
-//        FileInputStream in = new FileInputStream()
-//        InputStream imageStream = openInputStream(selectedImage);
-//        Bitmap image = BitmapFactory.decodeStream(imageStream);
-//        holder.imageViewImageProduct.setImageBitmap(image);
+        //holder.imageViewProductListImage.setImageURI();
+        //Uri padrao = Uri.parse(current.getImage());
+        //InputStream in = context.getContentResolver().get;
+        //InputStream imageStream = openInputStream(selectedImage);
+
+        try {
+            Uri selectedImage = Uri.parse(current.getImage());
+            InputStream imageStream = null;
+            imageStream = context.getContentResolver().openInputStream(selectedImage);
+            Bitmap image = BitmapFactory.decodeStream(imageStream);
+            holder.imageViewProductListImage.setImageBitmap(image);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override

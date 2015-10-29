@@ -25,7 +25,7 @@ public class ProductRepository {
         if(product.get_id() == null){
             db.insert(ProductContract.TABLE_NAME, null, contentValues);
         } else {
-            String where = " id = ?";
+            String where =  ProductContract.ID + " = ? ";
             String[] params = {product.get_id().toString()};
             db.update(ProductContract.TABLE_NAME, contentValues, where, params);
         }

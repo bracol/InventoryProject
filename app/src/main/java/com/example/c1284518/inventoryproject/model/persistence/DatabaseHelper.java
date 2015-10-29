@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.c1284518.inventoryproject.model.persistence.generic.GenericContract;
 import com.example.c1284518.inventoryproject.model.persistence.product.ProductContract;
 import com.example.c1284518.inventoryproject.util.ApplicationUtil;
 
@@ -25,6 +26,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL(GenericContract.getCreateScript());
         db.execSQL(ProductContract.getCreateScript());
     }
 

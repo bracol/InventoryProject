@@ -1,28 +1,33 @@
 package com.example.c1284518.inventoryproject.controller.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.c1284518.inventoryproject.R;
+import com.example.c1284518.inventoryproject.controller.adapters.GenericAdapter;
+import com.example.c1284518.inventoryproject.controller.adapters.GenericAdapterNormal;
+import com.example.c1284518.inventoryproject.model.entities.Generico;
 import com.example.c1284518.inventoryproject.model.entities.Product;
+import com.example.c1284518.inventoryproject.model.persistence.generic.GenericRepository;
+import com.example.c1284518.inventoryproject.model.service.GenericService;
 import com.example.c1284518.inventoryproject.model.service.ProductService;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,10 +35,10 @@ import java.util.List;
  */
 
 //INDICE
-    //FUNCOES DA ACTIVITY
-    //FUNCOES DE MANIPULACAO DE LAYOUT
-    //FUNCOES DE MANIPULACAO DE MENU
-    //BIND DE OBJETOS
+//FUNCOES DA ACTIVITY
+//FUNCOES DE MANIPULACAO DE LAYOUT
+//FUNCOES DE MANIPULACAO DE MENU
+//BIND DE OBJETOS
 
 public class InventoryFormActivity extends AppCompatActivity {
 
@@ -43,8 +48,12 @@ public class InventoryFormActivity extends AppCompatActivity {
     private Button buttonImageInsert;
     private Product product;
     private Toolbar toolbar;
-    Uri selectedImage;
-    Uri caminhoArquivo;
+    private Uri selectedImage;
+    private List<Generico> listTotal;
+    private List<Generico> listFormGeneric;
+    private Button buttonAddGeneric;
+    private TextView textViewGenericList;
+    private Spinner spinner;
 
 
     //INICIO FUNCOES DA ACTIVITY
@@ -59,22 +68,73 @@ public class InventoryFormActivity extends AppCompatActivity {
         bindImageViewProduct();
         bindButtonImageInsert();
         bindToolbar();
+        bindListGeneric();
+        bindButtonGeneric();
+        bindSpinnerGeneric();
     }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == 123){
-            if(resultCode == Activity.RESULT_OK){
+        if (requestCode == 123) {
+            if (resultCode == Activity.RESULT_OK) {
                 selectedImage = data.getData();
                 imageViewProduct.setImageURI(selectedImage);
             }
         }
     }
 
+    @Override
+    protected void onResume() {
+        updateGenericList();
+        super.onResume();
+    }
+
     //FIM DA FUNCOES DA ACTIVITY
 
     //INICIO DE MANIPULACAO DE OBJETOS DE LAYOUT
+
+
+    private void bindSpinnerGeneric() {
+        spinner = (Spinner) findViewById(R.id.spinnerListProdutFormGeneric);
+        spinner.setPrompt("Generic");
+        spinner.setAdapter(new GenericAdapterNormal(InventoryFormActivity.this, listTotal));
+        registerForContextMenu(spinner);
+        //textViewGenericList.setAdapter((SpinnerAdapter) new GenericAdapter(listTotal, InventoryFormActivity.this));
+    }
+
+    private void bindButtonGeneric() {
+        buttonAddGeneric = (Button) findViewById(R.id.buttonGenericForm);
+
+        buttonAddGeneric.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final AlertDialog.Builder alert = new AlertDialog.Builder(InventoryFormActivity.this);
+                final EditText input = new EditText(InventoryFormActivity.this);
+                alert.setTitle("Generic");
+                alert.setView(input);
+                alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        String value = input.getText().toString().trim();
+                        Generico generic = new Generico();
+                        generic.setValor(value);
+                        GenericService.save(generic);
+                        addListas(generic);
+                        updateGenericList();
+                    }
+                })
+                        .setNeutralButton("Não", null)
+                        .create()
+                        .show();
+            }
+        });
+    }
+
+    public void addListas(Generico generic){
+        listFormGeneric.add(generic);
+        listTotal.add(generic);
+    }
+
 
     private void bindImageViewProduct() {
         imageViewProduct = (ImageView) findViewById(R.id.imageViewProductInsert);
@@ -85,19 +145,12 @@ public class InventoryFormActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
     }
 
-    public void bindEditTextName(){
+    public void bindEditTextName() {
         editTextName = (TextView) findViewById(R.id.editTextProductName);
     }
 
-    public void bindEditTextValue(){
+    public void bindEditTextValue() {
         editTextValue = (TextView) findViewById(R.id.editTextProductValue);
-    }
-
-    public void bindProduct(){
-        product.setName(editTextName.getText().toString());
-        product.setValue(editTextValue.getText().toString().equals("") ? 0 : Double.parseDouble(editTextValue.getText().toString()));
-        product.setImage(selectedImage == null ? "" : selectedImage.toString());
-
     }
 
     private void bindButtonImageInsert() {
@@ -115,17 +168,24 @@ public class InventoryFormActivity extends AppCompatActivity {
         });
     }
 
-    //FIM DA MANIPULACAO DE OBJETOS DE LAYOUT
+//FIM DA MANIPULACAO DE OBJETOS DE LAYOUT
 
-    //INICIO DO BIND DE OBJETOS DE CLASSE
+//INICIO DO BIND DE OBJETOS DE CLASSE
 
     private void initProduct() {
         product = product == null ? new Product() : this.product;
     }
 
-    //FIM DO BIND DE OBJETOS DE CLASSE
+    public void bindProduct() {
+        product.setName(editTextName.getText().toString());
+        product.setValue(editTextValue.getText().toString().equals("") ? 0 : Double.parseDouble(editTextValue.getText().toString()));
+        product.setImage(selectedImage == null ? "" : selectedImage.toString());
 
-    //INICIO MANIPULACAO DE MENUS
+    }
+
+//FIM DO BIND DE OBJETOS DE CLASSE
+
+//INICIO MANIPULACAO DE MENUS
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -135,7 +195,7 @@ public class InventoryFormActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.menu_productForm_salvar:
                 onMenuSave();
         }
@@ -148,7 +208,105 @@ public class InventoryFormActivity extends AppCompatActivity {
         finish();
     }
 
-    //FIM MANIPULACAO DE MENUS
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        getMenuInflater().inflate(R.menu.menu_context_generic, menu);
+        super.onCreateContextMenu(menu, v, menuInfo);
+    }
 
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menuContextEdit:
+                onMenuEditClick();
+                break;
+            case R.id.menuContextRemove:
+                onMenuRemoveClick();
+                break;
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    private void onMenuEditClick() {
+        final AlertDialog.Builder alert = new AlertDialog.Builder(InventoryFormActivity.this);
+
+        final EditText input = new EditText(InventoryFormActivity.this);
+        input.setHint("Value");
+        alert.setTitle("Generic Manage");
+        alert.setView(input);
+        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String value = input.getText().toString();
+                Generico generic = (Generico) spinner.getSelectedItem();
+                generic.set_id(GenericRepository.getId(generic.getValor()));
+                generic.setValor(value);
+                GenericService.save(generic);
+                updateGenericList();
+            }
+        });
+        alert.setNeutralButton("Cancel", null);
+        alert.create();
+        alert.show();
+
+
+    }
+
+    private void onMenuRemoveClick() {
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(InventoryFormActivity.this);
+        dialog.setPositiveButton("Are you sure?", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Generico generic = (Generico) spinner.getSelectedItem();
+                GenericService.delete(generic.get_id());
+            }
+        });
+        dialog.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        dialog.setTitle("Generic Manager");
+        dialog.show();
+
+
+    }
+
+//FIM MANIPULACAO DE MENUS
+
+
+//INICIO DA MANIPULACAO LISTA
+
+    private void updateGenericList() {
+        listTotal = new ArrayList<>();
+        listTotal = GenericService.findAll();
+        GenericAdapterNormal adapter = (GenericAdapterNormal) spinner.getAdapter();
+        adapter.setItens(listTotal);
+        adapter.notifyDataSetChanged();
+    }
+
+    private void bindListGeneric() {
+        listTotal = new ArrayList<>();
+        listFormGeneric = new ArrayList<>();
+    }
+
+    private void addGenericForm(Generico generic) {
+        listFormGeneric.add(generic);
+    }
+
+    private void removeGenericForm(Generico generic) {
+        listFormGeneric.remove(generic);
+    }
+
+    /*private void adicionarItemAdapterGeneric(Generico generic) {
+        GenericAdapter adapter = (GenericAdapter) spinnerGeneric.getAdapter();
+        adapter.addItem(generic);
+        adapter.notifyDataSetChanged();
+
+    }*/
+
+    //FIM MAPIPULACAO DA LISTA
 
 }

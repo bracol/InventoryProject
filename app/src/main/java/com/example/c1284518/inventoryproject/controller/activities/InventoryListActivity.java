@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Adapter;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.example.c1284518.inventoryproject.R;
@@ -18,7 +19,7 @@ import com.example.c1284518.inventoryproject.model.service.ProductService;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.melnykov.fab.FloatingActionButton;
+//import com.melnykov.fab.FloatingActionButton;
 
 /**
  * Created by Wanilton on 28/10/2015.
@@ -29,7 +30,7 @@ public class InventoryListActivity extends AppCompatActivity{
     private Toolbar toolbar;
     private Product product;
     List<Product> listProduct;
-    private FloatingActionButton fab;
+    private Button fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +43,7 @@ public class InventoryListActivity extends AppCompatActivity{
     }
 
     private void bindFab() {
-        fab = (FloatingActionButton) findViewById(R.id.fabAdd);
+        fab = (Button) findViewById(R.id.fabAdd);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
