@@ -2,10 +2,17 @@ package com.example.c1284518.inventoryproject.controller.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
@@ -17,16 +24,22 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.c1284518.inventoryproject.R;
 import com.example.c1284518.inventoryproject.controller.adapters.GenericAdapter;
 import com.example.c1284518.inventoryproject.controller.adapters.GenericAdapterNormal;
+import com.example.c1284518.inventoryproject.model.ImageManager;
 import com.example.c1284518.inventoryproject.model.entities.Generico;
 import com.example.c1284518.inventoryproject.model.entities.Product;
 import com.example.c1284518.inventoryproject.model.persistence.generic.GenericRepository;
 import com.example.c1284518.inventoryproject.model.service.GenericService;
 import com.example.c1284518.inventoryproject.model.service.ProductService;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,12 +61,13 @@ public class InventoryFormActivity extends AppCompatActivity {
     private Button buttonImageInsert;
     private Product product;
     private Toolbar toolbar;
-    private Uri selectedImage;
+    private String selectedImage;
     private List<Generico> listTotal;
     private List<Generico> listFormGeneric;
     private Button buttonAddGeneric;
     private TextView textViewGenericList;
     private Spinner spinner;
+    private InputStream inputStream;
 
 
     //INICIO FUNCOES DA ACTIVITY
@@ -71,6 +85,11 @@ public class InventoryFormActivity extends AppCompatActivity {
         bindListGeneric();
         bindButtonGeneric();
         bindSpinnerGeneric();
+        bindInputStream();
+    }
+
+    private void bindInputStream() {
+
     }
 
 
@@ -78,8 +97,14 @@ public class InventoryFormActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 123) {
             if (resultCode == Activity.RESULT_OK) {
-                selectedImage = data.getData();
-                imageViewProduct.setImageURI(selectedImage);
+                try {
+                    Uri uri = data.getData();
+                    Bitmap image = ImageManager.decodeSampledBitmapFromResource(InventoryFormActivity.this, uri, imageViewProduct.getWidth(), imageViewProduct.getHeight());
+                    ImageManager.imageSet(imageViewProduct, uri, InventoryFormActivity.this);
+                    selectedImage = uri.toString();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -158,12 +183,16 @@ public class InventoryFormActivity extends AppCompatActivity {
         buttonImageInsert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent goToGallery = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                //Intent goToGallery = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 /*caminhoArquivo = Environment.getExternalStorageDirectory().toString()+"/"+System.currentTimeMillis()+".png";
                 File arquivo = new File(caminhoArquivo);
                 Uri localArquivo = Uri.fromFile(arquivo);
                 irParaCamera.putExtra(MediaStore.EXTRA_OUTPUT, localArquivo);*/
-                startActivityForResult(goToGallery, 123);
+                //startActivityForResult(goToGallery, 123);
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select picture"), 123);
             }
         });
     }
@@ -179,7 +208,7 @@ public class InventoryFormActivity extends AppCompatActivity {
     public void bindProduct() {
         product.setName(editTextName.getText().toString());
         product.setValue(editTextValue.getText().toString().equals("") ? 0 : Double.parseDouble(editTextValue.getText().toString()));
-        product.setImage(selectedImage == null ? "" : selectedImage.toString());
+        product.setImage(selectedImage == null ? "" : selectedImage);
 
     }
 
@@ -308,5 +337,9 @@ public class InventoryFormActivity extends AppCompatActivity {
     }*/
 
     //FIM MAPIPULACAO DA LISTA
+
+    //lala
+
+    //fim lala
 
 }

@@ -10,10 +10,13 @@
 
     <ImageView
         android:id="@+id/imageViewProductInsert"
+        android:padding="10dp"
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:layout_below="@+id/appbar"
-        android:src="@mipmap/ic_image_photo" />
+        android:src="@mipmap/ic_image_photo"
+        android:cropToPadding="true"
+        android:scaleType="centerCrop" />
 
     <Button
         android:layout_marginTop="12dp"

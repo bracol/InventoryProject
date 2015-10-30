@@ -5,6 +5,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,10 +15,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.c1284518.inventoryproject.R;
+import com.example.c1284518.inventoryproject.model.ImageManager;
 import com.example.c1284518.inventoryproject.model.entities.Product;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -28,7 +33,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
     List<Product> listProduct;
     Activity context;
 
-    public ProductAdapter(Activity context, List<Product> listProduct){
+    public ProductAdapter(Activity context, List<Product> listProduct) {
         this.context = context;
         this.listProduct = listProduct;
     }
@@ -46,20 +51,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
         Product current = listProduct.get(position);
         holder.textViewName.setText(current.getName());
         holder.textViewValue.setText(current.getValue().toString());
-        //holder.imageViewProductListImage.setImageURI();
-        //Uri padrao = Uri.parse(current.getImage());
-        //InputStream in = context.getContentResolver().get;
-        //InputStream imageStream = openInputStream(selectedImage);
+        Uri uri = Uri.parse(current.getImage());
+        holder.imageViewProductListImage.setImageBitmap(ImageManager.decodeSampledBitmapFromResource(context, uri, holder.imageViewProductListImage.getWidth(), holder.imageViewProductListImage.getHeight()));
+        //ImageManager.imageSet(holder.imageViewProductListImage, uri, context);
 
-        try {
-            Uri selectedImage = Uri.parse(current.getImage());
-            InputStream imageStream = null;
-            imageStream = context.getContentResolver().openInputStream(selectedImage);
-            Bitmap image = BitmapFactory.decodeStream(imageStream);
-            holder.imageViewProductListImage.setImageBitmap(image);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
 
     }
 
@@ -68,7 +63,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
         return listProduct.size();
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder{
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
 
         ImageView imageViewProductListImage;
         TextView textViewName;
@@ -84,7 +79,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
 
     }
 
-    public void setItens(List<Product> itens){
+    public void setItens(List<Product> itens) {
         listProduct.clear();
         listProduct.addAll(itens);
     }
