@@ -26,5 +26,13 @@ dependencies {
     compile 'com.android.support:support-v4:22.2.0'
     compile 'com.android.support:recyclerview-v7:22.0.+'
     compile 'com.android.support:cardview-v7:22.0.+'
-    //compile 'com.melnykov:floatingactionbutton:1.3.0a'
+    //compile 'com.melnykov:floatingactionbutton:1.3.0'
+    //compile 'C:.Pasta:floatingactionbutton-1.3.0-sources'
+    //compile files('libs/floatingactionbutton-1.3.0-javadoc.jar')
+    //compile files('libs/floatingactionbutton-1.3.0-sources.jar')
+    //compile files('libs/floatingactionbutton-1.3.0.jar')
+    //compile files('libs/floatingactionbutton-1.3.0.jar')
+    //compile files('libs/floatingactionbutton-1.3.0-javadoc.jar')
+    //compile files('libs/floatingactionbutton-1.3.0-sources.jar')
+    //compile files('libs/floatingactionbutton-1.1.0/classes.jar')
 }

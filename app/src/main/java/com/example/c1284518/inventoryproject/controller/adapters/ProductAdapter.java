@@ -2,6 +2,7 @@ package com.example.c1284518.inventoryproject.controller.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -48,11 +49,15 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        Product current = listProduct.get(position);
-        holder.textViewName.setText(current.getName());
-        holder.textViewValue.setText(current.getValue().toString());
-        Uri uri = Uri.parse(current.getImage());
-        holder.imageViewProductListImage.setImageBitmap(ImageManager.decodeSampledBitmapFromResource(context, uri, holder.imageViewProductListImage.getWidth(), holder.imageViewProductListImage.getHeight()));
+        try {
+            Product current = listProduct.get(position);
+            holder.textViewName.setText(current.getName());
+            holder.textViewValue.setText(current.getValue().toString());
+            ImageManager.imageSet(holder.imageViewProductListImage, current.getImage(), context);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //holder.imageViewProductListImage.setImageBitmap(ImageManager.decodeSampledBitmapFromResource(context, uri, holder.imageViewProductListImage.getWidth(), holder.imageViewProductListImage.getHeight()));
         //ImageManager.imageSet(holder.imageViewProductListImage, uri, context);
 
 
@@ -62,6 +67,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
     public int getItemCount() {
         return listProduct.size();
     }
+
+    public Product getItem(int position){
+        return listProduct.get(position);
+    }
+
+
+
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 

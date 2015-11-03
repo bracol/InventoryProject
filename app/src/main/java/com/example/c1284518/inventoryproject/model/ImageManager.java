@@ -1,9 +1,13 @@
 package com.example.c1284518.inventoryproject.model;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.CursorLoader;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.widget.ImageView;
 
 import java.io.FileNotFoundException;
@@ -37,41 +41,44 @@ public class ImageManager {
         return inSampleSize;
     }
 
-    public static Bitmap decodeSampledBitmapFromResource(Activity context, Uri caminho, int reqWidth, int reqHeight) {
+    public static Bitmap decodeSampledBitmapFromResource(Activity context, String caminho, int reqWidth, int reqHeight) {
 
-        try {
-            // First decode with inJustDecodeBounds=true to check dimensions
-            final BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
-            InputStream is = null;
-            is = context.getContentResolver().openInputStream(caminho);
-            BitmapFactory.decodeStream(is, null, options);
-            // Calculate inSampleSize
-            options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-            // Decode bitmap with inSampleSize set
-            is = context.getContentResolver().openInputStream(caminho);
-            options.inJustDecodeBounds = false;
-            return BitmapFactory.decodeStream(is, null, options);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
-
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(caminho, options);
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(caminho, options);
     }
 
-    public static void imageSet(ImageView imgView, Uri originalUri, Activity context) throws IOException {
-        String caminho = originalUri.getPath();
+    public static void imageSet(ImageView imgView, String path, Activity context) throws IOException {
         BitmapFactory.Options options = new BitmapFactory.Options();
-        InputStream is = context.getContentResolver().openInputStream(originalUri);
         options.inJustDecodeBounds = true;
-        BitmapFactory.decodeStream(is, null, options);
-        is.close();
-        //  BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+        BitmapFactory.decodeFile(path, options);
         int imageHeight = options.outHeight;
         int imageWidth = options.outWidth;
         String imageType = options.outMimeType;
 
-        Bitmap cacatua = decodeSampledBitmapFromResource(context, originalUri, imgView.getWidth(), imgView.getHeight());
+
+        Bitmap cacatua = decodeSampledBitmapFromResource(context, path, 100, 100);
         imgView.setImageBitmap(cacatua);
     }
+
+    public static String getImagePath(Context context, Uri uri) {
+        String document_id = uri.getPath();
+        document_id = document_id.substring(document_id.lastIndexOf(":") + 1);
+
+        Cursor cursor = context.getContentResolver().query(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                null, MediaStore.Images.Media._ID + " = ? ", new String[]{document_id}, null);
+        cursor.moveToFirst();
+        String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+        cursor.close();
+
+        return path;
+    }
+
+
 }

@@ -21,7 +21,8 @@ public class ProductService {
     }
 
     public static void save(Product product){
-        ProductRepository.save(product);
+        long id = ProductRepository.save(product);
+        product.set_id(id);
     }
 
     public static void delete(Long id){

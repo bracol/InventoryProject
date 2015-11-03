@@ -41,13 +41,16 @@ public class GenericContract {
     }
 
     public static Generico getGeneric(Cursor cursor){
-        Generico generico = new Generico();
-        generico.set_id(cursor.getLong(cursor.getColumnIndex(ID)));
-        generico.setValor(cursor.getString(cursor.getColumnIndex(VALOR)));
-        generico.setProduct_id(cursor.getLong(cursor.getColumnIndex(PRODUCT_ID)));
+        if (!cursor.isBeforeFirst() || cursor.moveToNext()) {
+            Generico generico = new Generico();
+            generico.set_id(cursor.getLong(cursor.getColumnIndex(ID)));
+            generico.setValor(cursor.getString(cursor.getColumnIndex(VALOR)));
+            generico.setProduct_id(cursor.getLong(cursor.getColumnIndex(PRODUCT_ID)));
+            return generico;
+        }
 
 
-        return generico;
+        return null;
     }
 
     public static List<Generico> getListGeneric(Cursor cursor){

@@ -45,12 +45,15 @@ public class GenericRepository {
         databaseHelper.close();
     }
 
-    public static List<Generico> getAll(){
+    public static List<Generico> getAll(Long product_id){
         List<Generico> listGeneric = new ArrayList<>();
         DatabaseHelper databaseHelper = DatabaseHelper.getInstance();
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
 
-        Cursor cursor = db.query(GenericContract.TABLE_NAME, GenericContract.COLUMNS, null, null, null, null, GenericContract.ID);
+        String where = GenericContract.PRODUCT_ID + " = ? ";
+        String[] params = {String.valueOf(product_id)};
+
+        Cursor cursor = db.query(GenericContract.TABLE_NAME, GenericContract.COLUMNS, where, params, null, null, GenericContract.ID);
         listGeneric = GenericContract.getListGeneric(cursor);
 
         db.close();

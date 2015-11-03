@@ -2,6 +2,7 @@ package com.example.c1284518.inventoryproject.controller.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -55,13 +57,13 @@ import java.util.List;
 
 public class InventoryFormActivity extends AppCompatActivity {
 
+    public static final String PARAM_PRODUCT = "PARAM";
     private TextView editTextName;
     private TextView editTextValue;
     private ImageView imageViewProduct;
     private Button buttonImageInsert;
     private Product product;
     private Toolbar toolbar;
-    private String selectedImage;
     private List<Generico> listTotal;
     private List<Generico> listFormGeneric;
     private Button buttonAddGeneric;
@@ -75,6 +77,7 @@ public class InventoryFormActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_form);
+
         initProduct();
 
         bindEditTextName();
@@ -97,14 +100,23 @@ public class InventoryFormActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 123) {
             if (resultCode == Activity.RESULT_OK) {
+                //               try {
                 try {
                     Uri uri = data.getData();
-                    Bitmap image = ImageManager.decodeSampledBitmapFromResource(InventoryFormActivity.this, uri, imageViewProduct.getWidth(), imageViewProduct.getHeight());
-                    ImageManager.imageSet(imageViewProduct, uri, InventoryFormActivity.this);
-                    selectedImage = uri.toString();
+                    String path;
+                    path = ImageManager.getImagePath(InventoryFormActivity.this, uri);
+                    //path = getRealPathFromURI(InventoryFormActivity.this, uri);
+                    ImageManager.imageSet(imageViewProduct, path, InventoryFormActivity.this);
+                    product.setImage(path);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+////                    Bitmap image = ImageManager.decodeSampledBitmapFromResource(InventoryFormActivity.this, uri, imageViewProduct.getWidth(), imageViewProduct.getHeight());
+////                    ImageManager.imageSet(imageViewProduct, uri, InventoryFormActivity.this);
+////                    selectedImage = uri.toString();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
             }
         }
     }
@@ -143,7 +155,6 @@ public class InventoryFormActivity extends AppCompatActivity {
                         String value = input.getText().toString().trim();
                         Generico generic = new Generico();
                         generic.setValor(value);
-                        GenericService.save(generic);
                         addListas(generic);
                         updateGenericList();
                     }
@@ -155,27 +166,36 @@ public class InventoryFormActivity extends AppCompatActivity {
         });
     }
 
-    public void addListas(Generico generic){
+    public void addListas(Generico generic) {
         listFormGeneric.add(generic);
-        listTotal.add(generic);
     }
 
 
     private void bindImageViewProduct() {
         imageViewProduct = (ImageView) findViewById(R.id.imageViewProductInsert);
+        if(product.getImage() != null){
+            try {
+                ImageManager.imageSet(imageViewProduct, product.getImage(), InventoryFormActivity.this);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void bindToolbar() {
         toolbar = (Toolbar) findViewById(R.id.appbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     public void bindEditTextName() {
         editTextName = (TextView) findViewById(R.id.editTextProductName);
+        editTextName.setText(product.getName() == null ? "" : product.getName() );
     }
 
     public void bindEditTextValue() {
         editTextValue = (TextView) findViewById(R.id.editTextProductValue);
+        editTextValue.setText(product.getValue() == null ? "" : String.valueOf(product.getValue()));
     }
 
     private void bindButtonImageInsert() {
@@ -202,14 +222,17 @@ public class InventoryFormActivity extends AppCompatActivity {
 //INICIO DO BIND DE OBJETOS DE CLASSE
 
     private void initProduct() {
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null){
+            this.product = bundle.getParcelable(PARAM_PRODUCT);
+        }
         product = product == null ? new Product() : this.product;
     }
 
     public void bindProduct() {
         product.setName(editTextName.getText().toString());
         product.setValue(editTextValue.getText().toString().equals("") ? 0 : Double.parseDouble(editTextValue.getText().toString()));
-        product.setImage(selectedImage == null ? "" : selectedImage);
-
+        product.setImage(product.getImage() == null ? "" : product.getImage());
     }
 
 //FIM DO BIND DE OBJETOS DE CLASSE
@@ -234,6 +257,10 @@ public class InventoryFormActivity extends AppCompatActivity {
     private void onMenuSave() {
         bindProduct();
         ProductService.save(product);
+        for (Generico g : listFormGeneric){
+            g.setProduct_id(product.get_id());
+            GenericService.save(g);
+        }
         finish();
     }
 
@@ -262,17 +289,14 @@ public class InventoryFormActivity extends AppCompatActivity {
         final EditText input = new EditText(InventoryFormActivity.this);
         input.setHint("Value");
         alert.setTitle("Generic Manage");
+        input.setPadding(5, 5, 5, 5);
         alert.setView(input);
         alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String value = input.getText().toString();
-                Generico generic = (Generico) spinner.getSelectedItem();
-                generic.set_id(GenericRepository.getId(generic.getValor()));
-                generic.setValor(value);
-                GenericService.save(generic);
-                updateGenericList();
+                editFormGeneric(value);
             }
         });
         alert.setNeutralButton("Cancel", null);
@@ -282,13 +306,21 @@ public class InventoryFormActivity extends AppCompatActivity {
 
     }
 
+    private void editFormGeneric(String value) {
+        Generico generic = (Generico) spinner.getSelectedItem();
+        generic.setValor(value);
+        if (generic.get_id() != null){
+            GenericService.save(generic);
+        }
+        updateGenericList();
+    }
+
     private void onMenuRemoveClick() {
         final AlertDialog.Builder dialog = new AlertDialog.Builder(InventoryFormActivity.this);
         dialog.setPositiveButton("Are you sure?", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Generico generic = (Generico) spinner.getSelectedItem();
-                GenericService.delete(generic.get_id());
+                deleteGenericList();
             }
         });
         dialog.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
@@ -303,6 +335,16 @@ public class InventoryFormActivity extends AppCompatActivity {
 
     }
 
+    private void deleteGenericList() {
+        Generico generic = (Generico) spinner.getSelectedItem();
+        if(generic.get_id() != null) {
+            GenericService.delete(generic.get_id());
+        } else {
+            listFormGeneric.remove(generic);
+        }
+        updateGenericList();
+    }
+
 //FIM MANIPULACAO DE MENUS
 
 
@@ -310,7 +352,8 @@ public class InventoryFormActivity extends AppCompatActivity {
 
     private void updateGenericList() {
         listTotal = new ArrayList<>();
-        listTotal = GenericService.findAll();
+        listTotal = GenericService.findAll(product.get_id());
+        listTotal.addAll(listFormGeneric);
         GenericAdapterNormal adapter = (GenericAdapterNormal) spinner.getAdapter();
         adapter.setItens(listTotal);
         adapter.notifyDataSetChanged();
@@ -321,25 +364,9 @@ public class InventoryFormActivity extends AppCompatActivity {
         listFormGeneric = new ArrayList<>();
     }
 
-    private void addGenericForm(Generico generic) {
-        listFormGeneric.add(generic);
-    }
-
-    private void removeGenericForm(Generico generic) {
-        listFormGeneric.remove(generic);
-    }
-
-    /*private void adicionarItemAdapterGeneric(Generico generic) {
-        GenericAdapter adapter = (GenericAdapter) spinnerGeneric.getAdapter();
-        adapter.addItem(generic);
-        adapter.notifyDataSetChanged();
-
-    }*/
-
     //FIM MAPIPULACAO DA LISTA
 
-    //lala
 
-    //fim lala
+
 
 }

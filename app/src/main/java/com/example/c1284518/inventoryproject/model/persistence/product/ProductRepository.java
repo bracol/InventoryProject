@@ -16,14 +16,16 @@ public class ProductRepository {
 
     public ProductRepository(){super();}
 
-    public static void save(Product product){
+    public static long save(Product product){
         DatabaseHelper databaseHelper = DatabaseHelper.getInstance();
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
+        long id;
         ContentValues contentValues = ProductContract.getContentValues(product);
 
         if(product.get_id() == null){
-            db.insert(ProductContract.TABLE_NAME, null, contentValues);
+            id = db.insert(ProductContract.TABLE_NAME, null, contentValues);
+            return id;
         } else {
             String where =  ProductContract.ID + " = ? ";
             String[] params = {product.get_id().toString()};
@@ -32,6 +34,7 @@ public class ProductRepository {
 
         db.close();
         databaseHelper.close();
+        return product.get_id();
     }
 
     public static void delete(Long id){

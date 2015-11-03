@@ -14,8 +14,8 @@ public class GenericService {
         super();
     }
 
-    public static List<Generico> findAll(){
-        return GenericRepository.getAll();
+    public static List<Generico> findAll(Long id){
+        return GenericRepository.getAll(id);
     }
 
     public static void save(Generico generic){
