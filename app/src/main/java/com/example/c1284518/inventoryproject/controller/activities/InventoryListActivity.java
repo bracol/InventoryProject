@@ -1,11 +1,13 @@
 package com.example.c1284518.inventoryproject.controller.activities;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -13,16 +15,14 @@ import android.view.ContextMenu;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.Button;
-import android.widget.ListView;
+import android.widget.ImageView;
 
 import com.example.c1284518.inventoryproject.R;
 import com.example.c1284518.inventoryproject.controller.adapters.ProductAdapter;
 import com.example.c1284518.inventoryproject.model.entities.Product;
-import com.example.c1284518.inventoryproject.model.persistence.product.ProductRepository;
 import com.example.c1284518.inventoryproject.model.service.ProductService;
-import com.melnykov.fab.FloatingActionButton;
+import com.example.c1284518.inventoryproject.util.async.FindAllAsync;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +63,7 @@ public class InventoryListActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        updateListProduct();
+        atualizaListAsync();
         super.onResume();
     }
 
@@ -117,6 +117,31 @@ public class InventoryListActivity extends AppCompatActivity {
 
     //FIM MANIPULACAO MENUS
 
+    //INICIO MANIPULACAO ASYNC
+
+    public void atualizaListAsync(){
+        new FindAllAsync() {
+
+            ProgressDialog pdialog;
+            @Override
+            protected void onPreExecute() {
+                pdialog = new ProgressDialog(InventoryListActivity.this);
+                pdialog.setMessage("Updating List");
+                pdialog.show();
+                super.onPreExecute();
+            }
+
+            @Override
+            protected void onPostExecute(List<Product> products) {
+                updateListProduct();
+                pdialog.dismiss();
+                super.onPostExecute(products);
+            }
+        }.execute();
+    }
+
+    //FIM MANIPULACAO ASYNC
+
     public void createDialog() {
         AlertDialog.Builder dialog = new AlertDialog.Builder(InventoryListActivity.this);
         dialog.setTitle("Choose one");
@@ -139,6 +164,8 @@ public class InventoryListActivity extends AppCompatActivity {
         });
         dialog.show();
     }
+
+
 
 
     public static class RecycleTouchListener implements RecyclerView.OnItemTouchListener {

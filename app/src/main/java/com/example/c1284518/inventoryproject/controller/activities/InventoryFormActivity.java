@@ -2,19 +2,11 @@ package com.example.c1284518.inventoryproject.controller.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.CursorLoader;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
@@ -26,20 +18,16 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.c1284518.inventoryproject.R;
-import com.example.c1284518.inventoryproject.controller.adapters.GenericAdapter;
 import com.example.c1284518.inventoryproject.controller.adapters.GenericAdapterNormal;
-import com.example.c1284518.inventoryproject.model.ImageManager;
+import com.example.c1284518.inventoryproject.util.ImageManager;
 import com.example.c1284518.inventoryproject.model.entities.Generico;
 import com.example.c1284518.inventoryproject.model.entities.Product;
-import com.example.c1284518.inventoryproject.model.persistence.generic.GenericRepository;
 import com.example.c1284518.inventoryproject.model.service.GenericService;
 import com.example.c1284518.inventoryproject.model.service.ProductService;
+import com.example.c1284518.inventoryproject.util.async.FindAllAsync;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -365,6 +353,8 @@ public class InventoryFormActivity extends AppCompatActivity {
     }
 
     //FIM MAPIPULACAO DA LISTA
+
+
 
 
 

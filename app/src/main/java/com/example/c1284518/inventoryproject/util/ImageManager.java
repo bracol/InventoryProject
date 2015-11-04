@@ -1,4 +1,4 @@
-package com.example.c1284518.inventoryproject.model;
+package com.example.c1284518.inventoryproject.util;
 
 import android.app.Activity;
 import android.content.Context;
