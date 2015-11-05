@@ -63,7 +63,7 @@ public class ImageManager {
         String imageType = options.outMimeType;
 
 
-        Bitmap cacatua = decodeSampledBitmapFromResource(context, path, 100, 100);
+        Bitmap cacatua = decodeSampledBitmapFromResource(context, path, 380, 213);
         imgView.setImageBitmap(cacatua);
     }
 

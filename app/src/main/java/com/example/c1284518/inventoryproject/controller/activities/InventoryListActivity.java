@@ -17,12 +17,16 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.c1284518.inventoryproject.R;
 import com.example.c1284518.inventoryproject.controller.adapters.ProductAdapter;
 import com.example.c1284518.inventoryproject.model.entities.Product;
 import com.example.c1284518.inventoryproject.model.service.ProductService;
 import com.example.c1284518.inventoryproject.util.async.FindAllAsync;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +53,7 @@ public class InventoryListActivity extends AppCompatActivity {
         bindToolbar();
         bindListView();
     }
+
 
     private void bindFab() {
         fab = (Button) findViewById(R.id.fabAdd);
