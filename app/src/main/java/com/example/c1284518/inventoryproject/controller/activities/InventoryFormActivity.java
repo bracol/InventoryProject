@@ -2,31 +2,32 @@ package com.example.c1284518.inventoryproject.controller.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.c1284518.inventoryproject.R;
-import com.example.c1284518.inventoryproject.controller.adapters.GenericAdapterNormal;
-import com.example.c1284518.inventoryproject.util.ImageManager;
 import com.example.c1284518.inventoryproject.model.entities.Generico;
 import com.example.c1284518.inventoryproject.model.entities.Product;
 import com.example.c1284518.inventoryproject.model.service.GenericService;
 import com.example.c1284518.inventoryproject.model.service.ProductService;
-import com.example.c1284518.inventoryproject.util.async.FindAllAsync;
+import com.example.c1284518.inventoryproject.util.FormHelper;
+import com.example.c1284518.inventoryproject.util.ImageManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,18 +47,17 @@ import java.util.List;
 public class InventoryFormActivity extends AppCompatActivity {
 
     public static final String PARAM_PRODUCT = "PARAM";
-    private TextView editTextName;
-    private TextView editTextValue;
+    private EditText editTextName;
+    private EditText editTextValue;
     private ImageView imageViewProduct;
     private Button buttonImageInsert;
     private Product product;
     private Toolbar toolbar;
-    private List<Generico> listTotal;
-    private List<Generico> listFormGeneric;
+    private static List<Generico> listTotal;
+    private static List<Generico> listFormGeneric;
     private Button buttonAddGeneric;
-    private TextView textViewGenericList;
     private Spinner spinner;
-    private InputStream inputStream;
+    private LinearLayout containerLayout;
 
 
     //INICIO FUNCOES DA ACTIVITY
@@ -76,11 +76,11 @@ public class InventoryFormActivity extends AppCompatActivity {
         bindListGeneric();
         bindButtonGeneric();
         bindSpinnerGeneric();
-        bindInputStream();
+        bindLinearLayout();
     }
 
-    private void bindInputStream() {
-
+    private void bindLinearLayout() {
+        LinearLayout containerLayout = (LinearLayout) findViewById(R.id.linearLayoutProductFormGeneric);
     }
 
 
@@ -121,10 +121,10 @@ public class InventoryFormActivity extends AppCompatActivity {
 
 
     private void bindSpinnerGeneric() {
-        spinner = (Spinner) findViewById(R.id.spinnerListProdutFormGeneric);
-        spinner.setPrompt("Generic");
-        spinner.setAdapter(new GenericAdapterNormal(InventoryFormActivity.this, listTotal));
-        registerForContextMenu(spinner);
+//        spinner = (Spinner) findViewById(R.id.spinnerListProdutFormGeneric);
+//        spinner.setPrompt("Generic");
+//        spinner.setAdapter(new GenericAdapterNormal(InventoryFormActivity.this, listTotal));
+//        registerForContextMenu(spinner);
         //textViewGenericList.setAdapter((SpinnerAdapter) new GenericAdapter(listTotal, InventoryFormActivity.this));
     }
 
@@ -134,34 +134,51 @@ public class InventoryFormActivity extends AppCompatActivity {
         buttonAddGeneric.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final AlertDialog.Builder alert = new AlertDialog.Builder(InventoryFormActivity.this);
-                final EditText input = new EditText(InventoryFormActivity.this);
-                alert.setTitle("Generic");
-                alert.setView(input);
-                alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        String value = input.getText().toString().trim();
-                        Generico generic = new Generico();
-                        generic.setValor(value);
-                        addListas(generic);
-                        updateGenericList();
+//                final AlertDialog.Builder alert = new AlertDialog.Builder(InventoryFormActivity.this);
+//                final EditText input = new EditText(InventoryFormActivity.this);
+//                alert.setTitle("Generic");
+//                alert.setView(input);
+//                alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int whichButton) {
+//                        String value = input.getText().toString().trim();
+//                        Generico generic = new Generico();
+//                        generic.setValor(value);
+//                        addListas(generic);
+//                        updateGenericList();
+//                    }
+//                })
+//                        .setNeutralButton("Não", null)
+//                        .create()
+//                        .show();
+                final EditText editText = new EditText(getBaseContext());
+                editText.setGravity(Gravity.LEFT);
+                editText.setTextColor(getResources().getColor(R.color.black));
+                editText.setHint("Generic");
+                editText.getBackground().setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_ATOP);
+                editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View v, boolean hasFocus) {
+                        if (!hasFocus) {
+                            Generico g = new Generico();
+                            g.setValor(editText.getText().toString());
+                            if (!verificaLista(editText, g.getValor())) {
+                                addListas(g);
+                            }
+                        }
                     }
-                })
-                        .setNeutralButton("Não", null)
-                        .create()
-                        .show();
+
+
+                });
+                containerLayout.addView(editText);
+                //editText.addTe
             }
         });
-    }
-
-    public void addListas(Generico generic) {
-        listFormGeneric.add(generic);
     }
 
 
     private void bindImageViewProduct() {
         imageViewProduct = (ImageView) findViewById(R.id.imageViewProductInsert);
-        if(product.getImage() != null){
+        if (product.getImage() != null) {
             try {
                 ImageManager.imageSet(imageViewProduct, product.getImage(), InventoryFormActivity.this);
             } catch (IOException e) {
@@ -177,12 +194,12 @@ public class InventoryFormActivity extends AppCompatActivity {
     }
 
     public void bindEditTextName() {
-        editTextName = (TextView) findViewById(R.id.editTextProductName);
-        editTextName.setText(product.getName() == null ? "" : product.getName() );
+        editTextName = (EditText) findViewById(R.id.editTextProductName);
+        editTextName.setText(product.getName() == null ? "" : product.getName());
     }
 
     public void bindEditTextValue() {
-        editTextValue = (TextView) findViewById(R.id.editTextProductValue);
+        editTextValue = (EditText) findViewById(R.id.editTextProductValue);
         editTextValue.setText(product.getValue() == null ? "" : String.valueOf(product.getValue()));
     }
 
@@ -211,7 +228,7 @@ public class InventoryFormActivity extends AppCompatActivity {
 
     private void initProduct() {
         Bundle bundle = getIntent().getExtras();
-        if (bundle != null){
+        if (bundle != null) {
             this.product = bundle.getParcelable(PARAM_PRODUCT);
         }
         product = product == null ? new Product() : this.product;
@@ -243,13 +260,15 @@ public class InventoryFormActivity extends AppCompatActivity {
     }
 
     private void onMenuSave() {
-        bindProduct();
-        ProductService.save(product);
-        for (Generico g : listFormGeneric){
-            g.setProduct_id(product.get_id());
-            GenericService.save(g);
+        if (FormHelper.verifyNumeric(editTextValue)) {
+            bindProduct();
+            ProductService.save(product);
+            for (Generico g : listFormGeneric) {
+                g.setProduct_id(product.get_id());
+                GenericService.save(g);
+            }
+            finish();
         }
-        finish();
     }
 
     @Override
@@ -297,7 +316,7 @@ public class InventoryFormActivity extends AppCompatActivity {
     private void editFormGeneric(String value) {
         Generico generic = (Generico) spinner.getSelectedItem();
         generic.setValor(value);
-        if (generic.get_id() != null){
+        if (generic.get_id() != null) {
             GenericService.save(generic);
         }
         updateGenericList();
@@ -325,7 +344,7 @@ public class InventoryFormActivity extends AppCompatActivity {
 
     private void deleteGenericList() {
         Generico generic = (Generico) spinner.getSelectedItem();
-        if(generic.get_id() != null) {
+        if (generic.get_id() != null) {
             GenericService.delete(generic.get_id());
         } else {
             listFormGeneric.remove(generic);
@@ -342,9 +361,9 @@ public class InventoryFormActivity extends AppCompatActivity {
         listTotal = new ArrayList<>();
         listTotal = GenericService.findAll(product.get_id());
         listTotal.addAll(listFormGeneric);
-        GenericAdapterNormal adapter = (GenericAdapterNormal) spinner.getAdapter();
-        adapter.setItens(listTotal);
-        adapter.notifyDataSetChanged();
+//        GenericAdapterNormal adapter = (GenericAdapterNormal) spinner.getAdapter();
+//        adapter.setItens(listTotal);
+//        adapter.notifyDataSetChanged();
     }
 
     private void bindListGeneric() {
@@ -352,11 +371,36 @@ public class InventoryFormActivity extends AppCompatActivity {
         listFormGeneric = new ArrayList<>();
     }
 
+    public boolean verificaLista(EditText editText, String value) {
+
+        for (Generico g : listTotal) {
+            if (g.getValor().equals(value) && !(value.equals(""))) {
+                editText.setError("This value already exist. Insert a new one");
+                editText.setText("");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void addListas(Generico generic) {
+        listFormGeneric.add(generic);
+        listTotal.add(generic);
+    }
+
     //FIM MAPIPULACAO DA LISTA
 
-
-
-
-
+    /*public class Listener implements View.OnFocusChangeListener {
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+            if (!hasFocus) {
+                Generico g = new Generico();
+                g.setValor(((EditText) v).getText().toString());
+                if (verificaLista((EditText) v, g.getValor())) {
+                    addListas(g);
+                }
+            }
+        }
+    }*/
 
 }

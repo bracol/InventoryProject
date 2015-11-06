@@ -3,7 +3,10 @@ package com.example.c1284518.inventoryproject.model.persistence.generic;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.view.View;
+import android.widget.EditText;
 
+import com.example.c1284518.inventoryproject.controller.activities.InventoryFormActivity;
 import com.example.c1284518.inventoryproject.model.entities.Generico;
 import com.example.c1284518.inventoryproject.model.persistence.DatabaseHelper;
 import com.example.c1284518.inventoryproject.model.persistence.product.ProductContract;
@@ -75,5 +78,23 @@ public class GenericRepository {
         db.close();
         return generic.get_id();
     }
+
+    public static boolean verifyValue(String value){
+        DatabaseHelper databaseHelper = DatabaseHelper.getInstance();
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+
+        String where = GenericContract.ID + " = ? ";
+        String [] params = {value};
+
+        Cursor cursor = db.query(GenericContract.TABLE_NAME, GenericContract.COLUMNS, where, params, null, null, null);
+        if (cursor.getColumnCount() > 0){
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+
 
 }

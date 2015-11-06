@@ -48,7 +48,7 @@ public class GenericAdapterNormal extends BaseAdapter {
         Generico current = getItem(position);
 
         View layout = context.getLayoutInflater().inflate(R.layout.list_item_generic, parent, false);
-        TextView textViewValue = (TextView) layout.findViewById(R.id.textViewGenericList);
+        TextView textViewValue = (TextView) layout.findViewById(R.id.editTextGenericList);
         textViewValue.setText(current.getValor());
 
 

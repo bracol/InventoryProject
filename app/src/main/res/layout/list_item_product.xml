@@ -64,7 +64,7 @@
             android:layout_below="@+id/imageViewProductListImage"
             >
 
-            <TextView
+            <Button
                 android:id="@+id/textViewProductListEdit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -72,9 +72,11 @@
                 android:textSize="20dp"
                 android:padding="8dp"
                 android:textColor="@color/colorAccent"
+                style="?android:attr/borderlessButtonStyle"
+                android:background="@drawable/flat_pressed"
                 />
 
-            <TextView
+            <Button
                 android:id="@+id/textViewProductListRemove"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -82,6 +84,9 @@
                 android:padding="8dp"
                 android:text="Remove"
                 android:textColor="@color/colorAccent"
+                style="?android:attr/borderlessButtonStyle"
+                android:background="@drawable/flat_pressed"
+
                 />
 
 

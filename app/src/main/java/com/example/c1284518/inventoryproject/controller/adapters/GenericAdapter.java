@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.c1284518.inventoryproject.R;
@@ -48,11 +49,11 @@ public class GenericAdapter extends RecyclerView.Adapter<GenericAdapter.MyViewHo
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{
 
-        TextView textViewValor;
+        EditText textViewValor;
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            itemView.findViewById(R.id.textViewGenericList);
+            itemView.findViewById(R.id.editTextGenericList);
         }
     }
 

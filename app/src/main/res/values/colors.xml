@@ -8,4 +8,6 @@
     <color name="colorHighLight">#B6B6B6</color>
     <color name="color1card">#424242</color>
     <color name="color2card">#757575</color>
+    <color name="buttonPressed">#795d02</color>
+    <color name="black">#000000</color>
 </resources>

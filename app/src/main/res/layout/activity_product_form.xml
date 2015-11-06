@@ -1,90 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    >
+    android:layout_height="match_parent">
 
-    <include
-        android:id="@+id/appbar"
-        layout="@layout/app_bar" />
-
-    <ImageView
-        android:id="@+id/imageViewProductInsert"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="8dp"
-        android:layout_width="380dp"
-        android:layout_height="213dp"
-        android:layout_below="@+id/appbar"
-        android:src="@mipmap/ic_image_photo"
-        android:cropToPadding="true"
-        android:scaleType="centerCrop" />
-
-    <Button
-        android:layout_marginTop="12dp"
-        android:id="@+id/buttonProductFormImageInsert"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:paddingRight="16dp"
-        android:layout_below="@+id/imageViewProductInsert"
-        android:text="Alterar" />
-
-    <EditText
-        android:id="@+id/editTextProductName"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/buttonProductFormImageInsert"
-        android:layout_marginTop="8dp"
-        android:hint="Name"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/editTextProductValue"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/editTextProductName"
-        android:layout_marginTop="8dp"
-        android:hint="Value"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        />
+        <include
+            android:id="@+id/appbar"
+            layout="@layout/app_bar" />
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_below="@+id/editTextProductValue"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        >
-
-        <Button
-            android:id="@+id/buttonGenericForm"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="New Generic"
-            android:textStyle="bold"
+        <ImageView
+            android:id="@+id/imageViewProductInsert"
+            android:layout_width="380dp"
+            android:layout_height="213dp"
+            android:layout_below="@+id/appbar"
+            android:cropToPadding="true"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            />
+            android:paddingTop="8dp"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/ic_image_photo" />
 
-        <Spinner
-            android:id="@+id/spinnerListProdutFormGeneric"
-            android:layout_width="200dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            style="@style/Widget.AppCompat.Spinner.Underlined"
-            />
+        <Button
+            android:id="@+id/buttonProductFormImageInsert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/imageViewProductInsert"
+            android:layout_marginTop="12dp"
+            android:paddingRight="16dp"
+            android:text="Alterar" />
+
+        <EditText
+            android:id="@+id/editTextProductName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/buttonProductFormImageInsert"
+            android:layout_marginTop="8dp"
+            android:hint="Name"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp" />
+
+        <EditText
+            android:id="@+id/editTextProductValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/editTextProductName"
+            android:layout_marginTop="8dp"
+            android:hint="Value"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/editTextProductValue"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <Button
+                android:id="@+id/buttonGenericForm"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:text="New Generic"
+                android:textStyle="bold" />
 
 
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/linearLayoutProductFormGeneric"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
 
 
-    </LinearLayout>
+                    <ListView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"></ListView>
 
 
-</RelativeLayout>
+                </LinearLayout>
+            </ScrollView>
+
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+</ScrollView>
