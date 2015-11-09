@@ -17,10 +17,10 @@ public class FormHelper {
         try {
             String s = editText.getText().toString();
             Double.parseDouble(s);
-            return false;
+            return true;
         }catch (NumberFormatException e){
             editText.setError("Only Numeric!");
-            return true;
+            return false;
         }
     }
 

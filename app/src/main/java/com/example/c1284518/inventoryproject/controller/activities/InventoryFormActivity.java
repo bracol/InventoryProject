@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.Menu;
@@ -20,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.c1284518.inventoryproject.R;
 import com.example.c1284518.inventoryproject.model.entities.Generico;
@@ -58,6 +62,11 @@ public class InventoryFormActivity extends AppCompatActivity {
     private Button buttonAddGeneric;
     private Spinner spinner;
     private LinearLayout containerLayout;
+    private List<EditText> listEditTextTotal;
+    private List<EditText> listEditTextGeneric;
+    private EditText firstEdit;
+    private int sizeEdit = 0;
+    private ColorStateList color;
 
 
     //INICIO FUNCOES DA ACTIVITY
@@ -68,6 +77,7 @@ public class InventoryFormActivity extends AppCompatActivity {
 
         initProduct();
 
+        bindLinearLayout();
         bindEditTextName();
         bindEditTextValue();
         bindImageViewProduct();
@@ -76,11 +86,52 @@ public class InventoryFormActivity extends AppCompatActivity {
         bindListGeneric();
         bindButtonGeneric();
         bindSpinnerGeneric();
-        bindLinearLayout();
+        bindEditTextListTotal();
+        bindEditTextListGeneric();
+        bindFirstEditText();
+
+    }
+
+    private void bindEditTextListGeneric() {
+        listEditTextGeneric = new ArrayList<>();
+
+    }
+
+    private void bindEditTextListTotal() {
+        listEditTextTotal = new ArrayList<>();
+        if (listTotal.size() > 0){
+            for(int i = 0; i <= listTotal.size(); i++){
+                final EditText editTextInsidee = new EditText(getBaseContext());
+                addMethodEdit(editTextInsidee);
+                containerLayout.addView(editTextInsidee);
+            }
+        }
+
+    }
+
+    private void bindFirstEditText() {
+        firstEdit = (EditText) findViewById(R.id.editTextFirstGeneric);
+        color = firstEdit.getHintTextColors();
+        addMethodEdit(firstEdit);
+    }
+
+    private void addEditList(EditText editText) {
+        listEditTextTotal.add(editText);
+    }
+
+    private void addMethodEdit(final EditText editText) {
+        editText.setId(sizeEdit);
+        editText.setGravity(Gravity.LEFT);
+        editText.setTextColor(getResources().getColor(R.color.black));
+        editText.setHint("Generic");
+        editText.setHintTextColor(color);
+        editText.getBackground().setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_ATOP);
+        editText.addTextChangedListener(new Listener(editText));
+        addEditList(editText);
     }
 
     private void bindLinearLayout() {
-        LinearLayout containerLayout = (LinearLayout) findViewById(R.id.linearLayoutProductFormGeneric);
+        containerLayout = (LinearLayout) findViewById(R.id.linearLayoutProductFormGeneric);
     }
 
 
@@ -88,23 +139,15 @@ public class InventoryFormActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 123) {
             if (resultCode == Activity.RESULT_OK) {
-                //               try {
                 try {
                     Uri uri = data.getData();
                     String path;
                     path = ImageManager.getImagePath(InventoryFormActivity.this, uri);
-                    //path = getRealPathFromURI(InventoryFormActivity.this, uri);
                     ImageManager.imageSet(imageViewProduct, path, InventoryFormActivity.this);
                     product.setImage(path);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-////                    Bitmap image = ImageManager.decodeSampledBitmapFromResource(InventoryFormActivity.this, uri, imageViewProduct.getWidth(), imageViewProduct.getHeight());
-////                    ImageManager.imageSet(imageViewProduct, uri, InventoryFormActivity.this);
-////                    selectedImage = uri.toString();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
             }
         }
     }
@@ -115,9 +158,9 @@ public class InventoryFormActivity extends AppCompatActivity {
         super.onResume();
     }
 
-    //FIM DA FUNCOES DA ACTIVITY
+//FIM DA FUNCOES DA ACTIVITY
 
-    //INICIO DE MANIPULACAO DE OBJETOS DE LAYOUT
+//INICIO DE MANIPULACAO DE OBJETOS DE LAYOUT
 
 
     private void bindSpinnerGeneric() {
@@ -150,27 +193,6 @@ public class InventoryFormActivity extends AppCompatActivity {
 //                        .setNeutralButton("Não", null)
 //                        .create()
 //                        .show();
-                final EditText editText = new EditText(getBaseContext());
-                editText.setGravity(Gravity.LEFT);
-                editText.setTextColor(getResources().getColor(R.color.black));
-                editText.setHint("Generic");
-                editText.getBackground().setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_ATOP);
-                editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View v, boolean hasFocus) {
-                        if (!hasFocus) {
-                            Generico g = new Generico();
-                            g.setValor(editText.getText().toString());
-                            if (!verificaLista(editText, g.getValor())) {
-                                addListas(g);
-                            }
-                        }
-                    }
-
-
-                });
-                containerLayout.addView(editText);
-                //editText.addTe
             }
         });
     }
@@ -263,10 +285,15 @@ public class InventoryFormActivity extends AppCompatActivity {
         if (FormHelper.verifyNumeric(editTextValue)) {
             bindProduct();
             ProductService.save(product);
-            for (Generico g : listFormGeneric) {
-                g.setProduct_id(product.get_id());
-                GenericService.save(g);
+            for (EditText e : listEditTextTotal) {
+                if (!e.getText().toString().equals("")) {
+                    Generico g = new Generico();
+                    g.setProduct_id(product.get_id());
+                    g.setValor(e.getText().toString());
+                    GenericService.save(g);
+                }
             }
+            List<Generico> genericos = GenericService.findAll(product.get_id());
             finish();
         }
     }
@@ -390,17 +417,52 @@ public class InventoryFormActivity extends AppCompatActivity {
 
     //FIM MAPIPULACAO DA LISTA
 
-    /*public class Listener implements View.OnFocusChangeListener {
+
+    public class Listener implements TextWatcher {
+        EditText editText;
+
+        public Listener(EditText editText) {
+            this.editText = editText;
+        }
+
         @Override
-        public void onFocusChange(View v, boolean hasFocus) {
-            if (!hasFocus) {
-                Generico g = new Generico();
-                g.setValor(((EditText) v).getText().toString());
-                if (verificaLista((EditText) v, g.getValor())) {
-                    addListas(g);
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            if (editText.getId() == sizeEdit) {
+                final EditText editTextInside = new EditText(getBaseContext());
+                sizeEdit++;
+                addMethodEdit(editTextInside);
+                containerLayout.addView(editTextInside);
+            }
+            if (editText.getText().toString().equals("")) {
+                if ((editText.getId() + 1) == sizeEdit) {
+                    removeList(editText.getId() + 1);
                 }
             }
         }
-    }*/
+    }
+
+    public void check(){
+        for (int i = 0; i < listEditTextTotal.size() - 1; i++){
+            if ((i + 1) <= listEditTextTotal.size() && listEditTextTotal.get(i).getText().toString().equals("") && listEditTextTotal.get(i + 1).getText().toString().equals("")){
+                removeList(listEditTextTotal.get(i).getId() + 1);
+            }
+        }
+    }
+
+    public void removeList(int id){
+        listEditTextTotal.remove(findViewById(id));
+        containerLayout.removeView(findViewById(id));
+        sizeEdit--;
+    }
 
 }

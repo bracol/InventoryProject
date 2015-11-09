@@ -1,22 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+
+
+        <include
+            android:id="@+id/appbar"
+            layout="@layout/app_bar" />
+    <ScrollView
+        android:layout_below="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <include
-            android:id="@+id/appbar"
-            layout="@layout/app_bar" />
-
         <ImageView
             android:id="@+id/imageViewProductInsert"
             android:layout_width="380dp"
             android:layout_height="213dp"
-            android:layout_below="@+id/appbar"
             android:cropToPadding="true"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
@@ -83,10 +88,10 @@
                     android:layout_gravity="center"
                     android:orientation="vertical">
 
-
-                    <ListView
+                    <EditText
+                        android:id="@+id/editTextFirstGeneric"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"></ListView>
+                        android:layout_height="wrap_content" />
 
 
                 </LinearLayout>
@@ -97,4 +102,5 @@
 
 
     </RelativeLayout>
-</ScrollView>
+    </ScrollView>
+</RelativeLayout>
