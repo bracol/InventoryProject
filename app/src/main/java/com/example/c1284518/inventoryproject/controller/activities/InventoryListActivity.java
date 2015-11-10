@@ -85,21 +85,6 @@ public class InventoryListActivity extends AppCompatActivity {
         listProduct = new ArrayList<>();
         recyclerView = (RecyclerView) findViewById(R.id.recyclewViewProduct);
         recyclerView.setAdapter(new ProductAdapter(InventoryListActivity.this, listProduct));
-        recyclerView.addOnItemTouchListener(new RecycleTouchListener(InventoryListActivity.this, recyclerView, new ClickListener() {
-            @Override
-            public void onClick(View view, int position) {
-
-            }
-
-            @Override
-            public void onLongClick(View view, int position) {
-                ProductAdapter adapter = (ProductAdapter) recyclerView.getAdapter();
-                product = adapter.getItem(position);
-                createDialog();
-            }
-        }));
-        recyclerView.setLayoutManager(new LinearLayoutManager(InventoryListActivity.this));
-        registerForContextMenu(recyclerView);
     }
 
     private void bindToolbar() {
@@ -110,17 +95,6 @@ public class InventoryListActivity extends AppCompatActivity {
 
     //FIM DA MANIPULACAO DE OBJETOS DO LAYOUT
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        getMenuInflater().inflate(R.menu.menu_context_generic, menu);
-        super.onCreateContextMenu(menu, v, menuInfo);
-    }
-
-
-    //INICIO MANIPULACAO MENUS
-
-
-    //FIM MANIPULACAO MENUS
 
     //INICIO MANIPULACAO ASYNC
 
@@ -147,78 +121,4 @@ public class InventoryListActivity extends AppCompatActivity {
 
     //FIM MANIPULACAO ASYNC
 
-    public void createDialog() {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(InventoryListActivity.this);
-        dialog.setTitle("Choose one");
-        dialog.setPositiveButton("Edit", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                Intent goToInventoryForm = new Intent(InventoryListActivity.this, InventoryFormActivity.class);
-                goToInventoryForm.putExtra(PARAM_PRODUCT, product);
-                startActivity(goToInventoryForm);
-            }
-        });
-        dialog.setNegativeButton("Remove", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                ProductService.delete(product.get_id());
-                updateListProduct();
-            }
-
-        });
-        dialog.show();
-    }
-
-
-
-
-    public static class RecycleTouchListener implements RecyclerView.OnItemTouchListener {
-
-        ClickListener clickListener;
-        GestureDetector gestureDetector;
-
-        public RecycleTouchListener(Context context, final RecyclerView rv, ClickListener cl) {
-            this.clickListener = cl;
-            gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
-                @Override
-                public boolean onSingleTapUp(MotionEvent e) {
-                    return true;
-                }
-
-                @Override
-                public void onLongPress(MotionEvent e) {
-
-                    View child = rv.findChildViewUnder(e.getX(), e.getY());
-                    if (child != null && clickListener != null) {
-                        clickListener.onLongClick(child, rv.getChildAdapterPosition(child));
-                    }
-
-                    super.onLongPress(e);
-                }
-            });
-
-        }
-
-        @Override
-        public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-            View child = rv.findChildViewUnder(e.getX(), e.getY());
-            if (child != null && clickListener != null && gestureDetector.onTouchEvent(e)) {
-                clickListener.onClick(child, rv.getChildAdapterPosition(child));
-            }
-            return false;
-        }
-
-        @Override
-        public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-
-        }
-    }
-
-
-    public static interface ClickListener {
-        public void onClick(View view, int position);
-
-        public void onLongClick(View view, int position);
-    }
 }

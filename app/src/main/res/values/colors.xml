@@ -10,4 +10,5 @@
     <color name="color2card">#757575</color>
     <color name="buttonPressed">#795d02</color>
     <color name="black">#000000</color>
+    <color name="hint">#70757575</color>
 </resources>

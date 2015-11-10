@@ -10,6 +10,7 @@ import com.example.c1284518.inventoryproject.controller.activities.InventoryForm
 import com.example.c1284518.inventoryproject.model.entities.Generico;
 import com.example.c1284518.inventoryproject.model.persistence.DatabaseHelper;
 import com.example.c1284518.inventoryproject.model.persistence.product.ProductContract;
+import com.example.c1284518.inventoryproject.model.service.GenericService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,6 +93,20 @@ public class GenericRepository {
         } else {
             return false;
         }
+
+    }
+
+    public static void deleteByProductID(long product_id){
+        DatabaseHelper databaseHelper = DatabaseHelper.getInstance();
+        SQLiteDatabase data = databaseHelper.getWritableDatabase();
+
+        String where = GenericContract.PRODUCT_ID + " = ? ";
+        String[] params = {String.valueOf(product_id)};
+
+        data.delete(GenericContract.TABLE_NAME, where, params);
+
+        databaseHelper.close();
+        data.close();
 
     }
 

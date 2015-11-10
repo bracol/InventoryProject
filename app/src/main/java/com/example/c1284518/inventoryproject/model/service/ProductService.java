@@ -1,6 +1,7 @@
 package com.example.c1284518.inventoryproject.model.service;
 
 import com.example.c1284518.inventoryproject.model.entities.Product;
+import com.example.c1284518.inventoryproject.model.persistence.generic.GenericRepository;
 import com.example.c1284518.inventoryproject.model.persistence.product.ProductContract;
 import com.example.c1284518.inventoryproject.model.persistence.product.ProductRepository;
 
@@ -26,6 +27,7 @@ public class ProductService {
     }
 
     public static void delete(Long id){
+        GenericRepository.deleteByProductID(id);
         ProductRepository.delete(id);
     }
 

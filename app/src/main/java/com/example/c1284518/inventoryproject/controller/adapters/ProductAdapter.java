@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.example.c1284518.inventoryproject.R;
 import com.example.c1284518.inventoryproject.controller.activities.InfoActivity;
+import com.example.c1284518.inventoryproject.controller.activities.InventoryFormActivity;
 import com.example.c1284518.inventoryproject.controller.activities.InventoryListActivity;
 import com.example.c1284518.inventoryproject.model.entities.Product;
 import com.example.c1284518.inventoryproject.model.service.ProductService;
@@ -126,7 +127,16 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
                 case R.id.textViewProductListRemove:
                     deleteProduct();
                     break;
+                case R.id.textViewProductListEdit:
+                    editProduct();
+                    break;
             }
+        }
+
+        private void editProduct() {
+            Intent goToInventoryForm = new Intent(context, InventoryFormActivity.class);
+            goToInventoryForm.putExtra(InventoryFormActivity.PARAM_PRODUCT, getItem(getAdapterPosition()));
+            context.startActivity(goToInventoryForm);
         }
 
         private void deleteProduct() {
